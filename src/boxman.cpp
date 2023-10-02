@@ -1,5 +1,6 @@
 #include "boxman.h"
 #include "ui_MainWindow.h"
+#include "BoxManSettingsUi.h"
 
 #include <QProcess>
 #include <QStandardPaths>
@@ -8,30 +9,35 @@
 namespace fs = std::filesystem;
 
 namespace BoxManager {
-    MainWindow::MainWindow(QWidget *parent) :
-            QMainWindow(parent), ui(new Ui::MainWindow) {
+    MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWindow) {
         ui->setupUi(this);
         PopulateList();
-        ConnectButtons(ui);
+        ConnectActions(ui);
     }
 
     MainWindow::~MainWindow() {
         delete ui;
     }
 
-    void MainWindow::ConnectButtons(Ui_MainWindow* window) const {
+    void MainWindow::ShowSettingsDialog() {
+        auto settingsUi = new BoxManSettingsUi(ui->centralwidget, this);
+        settingsUi->exec();
+    }
+
+    void MainWindow::ConnectActions(Ui_MainWindow *window) const {
         connect(window->actionExit, &QAction::triggered, this, &QApplication::quit);
         connect(window->actionRefresh_Machine_List, &QAction::triggered, this, &MainWindow::PopulateList);
         connect(window->actionStart_Machine, &QAction::triggered, this, &MainWindow::StartMachine);
         connect(window->actionConfigure_Machine, &QAction::triggered, this, &MainWindow::ConfigureMachineAction);
         connect(window->MachineList, &QListView::doubleClicked, this, &MainWindow::StartMachine);
+        connect(window->actionSettings, &QAction::triggered, this, &MainWindow::ShowSettingsDialog);
     }
 
     void MainWindow::StartMachine() {
         QString dir = GetSelectedMachine();
         fs::path cfg = fs::path(dir.toStdString());
         cfg.append("86box.cfg");
-        if(!(exists(cfg) && file_size(cfg) > 0)) {
+        if (!(exists(cfg) && file_size(cfg) > 0)) {
             ConfigureMachine(dir);
             return;
         }
@@ -41,7 +47,7 @@ namespace BoxManager {
         Run86Box(args, dir);
     }
 
-    void MainWindow::ConfigureMachine(const QString& dir) {
+    void MainWindow::ConfigureMachine(const QString &dir) {
         QStringList args;
         args << "-S" << "-P" << dir;
         Run86Box(args, dir);
@@ -51,13 +57,13 @@ namespace BoxManager {
         ConfigureMachine(GetSelectedMachine());
     }
 
-    void MainWindow::Run86Box(QStringList& args, const QString& wd) const {
+    void MainWindow::Run86Box(QStringList &args, const QString &wd) const {
         auto program = QString(settings.Box86BinaryPath.c_str());
         args << "-R" << QString(settings.RomDirectory.c_str());
 
         auto *process = new QProcess(nullptr);
 
-        if(wd != nullptr)
+        if (is_directory(fs::path(wd.toStdString())))
             process->setWorkingDirectory(wd);
 
         process->start(program, args);
@@ -65,7 +71,7 @@ namespace BoxManager {
 
     QString MainWindow::GetSelectedMachine() {
         int selectedRow = ui->MachineList->selectionModel()->currentIndex().row();
-        QAbstractItemModel* model = ui->MachineList->model();
+        QAbstractItemModel *model = ui->MachineList->model();
         fs::path path = fs::path(settings.MachineDirectory);
         path.append(model->index(selectedRow, 0).data().toString().toStdString());
         return {path.c_str()};
@@ -74,7 +80,7 @@ namespace BoxManager {
     void MainWindow::PopulateList() {
         QStringList list;
         auto *model = new QStringListModel(this);
-        for(const auto& machines : settings.GetAllMachinePaths()) {
+        for (const auto &machines: settings.GetAllMachinePaths()) {
             auto str = QString(machines.filename().c_str());
             list.append(str);
         }

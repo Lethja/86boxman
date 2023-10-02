@@ -17,6 +17,10 @@ namespace BoxManSettings {
         fs::path RomDirectory;
 
         [[nodiscard]] std::vector<fs::path> GetAllMachinePaths() const;
+
+        static fs::path GetIniPath();
+
+        void WriteIni() const;
     };
 } // BoxManSettings
 

@@ -18,13 +18,14 @@ namespace BoxManager {
 
         ~MainWindow() override;
 
+        BoxManSettings::BoxManSettings settings;
+
+        void PopulateList();
+
     private:
         Ui::MainWindow *ui;
 
-        void PopulateList();
-        BoxManSettings::BoxManSettings settings;
-
-        void ConnectButtons(Ui_MainWindow *window) const;
+        void ConnectActions(Ui_MainWindow *window) const;
 
         void StartMachine();
 
@@ -32,9 +33,11 @@ namespace BoxManager {
 
         void ConfigureMachineAction();
 
-        void Run86Box(QStringList &args, const QString& wd) const;
+        void Run86Box(QStringList &args, const QString &wd) const;
 
         void ConfigureMachine(const QString &dir);
+
+        void ShowSettingsDialog();
     };
 } // BoxManager
 

@@ -19,7 +19,9 @@ add_executable(86boxman src/main.cpp
         src/MainWindow.ui
         src/BoxManSettings.cpp
         src/BoxManSettings.h
-        src/BoxManSettings.ui)
+        src/BoxManSettingsUi.cpp
+        src/BoxManSettingsUi.h
+        src/BoxManSettingsUi.ui)
 
 target_link_libraries(86boxman
         Qt5::Core
