@@ -11,7 +11,7 @@ namespace BoxManager {
     MainWindow::MainWindow(QWidget *parent) :
             QMainWindow(parent), ui(new Ui::MainWindow) {
         ui->setupUi(this);
-        PopulateList(ui);
+        PopulateList();
         ConnectButtons(ui);
     }
 
@@ -20,8 +20,11 @@ namespace BoxManager {
     }
 
     void MainWindow::ConnectButtons(Ui_MainWindow* window) const {
-        connect(window->StartButton, &QPushButton::released, this, &MainWindow::StartMachine);
-        connect(window->EditButton, &QPushButton::released, this, &MainWindow::ConfigureMachineAction);
+        connect(window->actionExit, &QAction::triggered, this, &QApplication::quit);
+        connect(window->actionRefresh_Machine_List, &QAction::triggered, this, &MainWindow::PopulateList);
+        connect(window->actionStart_Machine, &QAction::triggered, this, &MainWindow::StartMachine);
+        connect(window->actionConfigure_Machine, &QAction::triggered, this, &MainWindow::ConfigureMachineAction);
+        connect(window->MachineList, &QListView::doubleClicked, this, &MainWindow::StartMachine);
     }
 
     void MainWindow::StartMachine() {
@@ -63,18 +66,20 @@ namespace BoxManager {
     QString MainWindow::GetSelectedMachine() {
         int selectedRow = ui->MachineList->selectionModel()->currentIndex().row();
         QAbstractItemModel* model = ui->MachineList->model();
-        return model->index(selectedRow, 0).data().toString();
+        fs::path path = fs::path(settings.MachineDirectory);
+        path.append(model->index(selectedRow, 0).data().toString().toStdString());
+        return {path.c_str()};
     }
 
-    void MainWindow::PopulateList(Ui_MainWindow* window) {
+    void MainWindow::PopulateList() {
         QStringList list;
         auto *model = new QStringListModel(this);
-        for(const auto& machines : settings.GetAllMachineConfigs()) {
-            auto str = QString(machines.c_str());
+        for(const auto& machines : settings.GetAllMachinePaths()) {
+            auto str = QString(machines.filename().c_str());
             list.append(str);
         }
 
         model->setStringList(list);
-        window->MachineList->setModel(model);
+        ui->MachineList->setModel(model);
     }
 }

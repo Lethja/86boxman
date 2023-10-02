@@ -16,7 +16,7 @@ namespace BoxManSettings {
         fs::path MachineDirectory;
         fs::path RomDirectory;
 
-        [[nodiscard]] std::vector<fs::path> GetAllMachineConfigs() const;
+        [[nodiscard]] std::vector<fs::path> GetAllMachinePaths() const;
     };
 } // BoxManSettings
 

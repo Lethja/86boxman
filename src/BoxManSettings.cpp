@@ -32,7 +32,7 @@ namespace BoxManSettings {
         MachineDirectory = fs::path(s.value(INI_PATH_VMP, MachinePath.c_str()).toString().toStdString());
     }
 
-    std::vector<fs::path> BoxManSettings::GetAllMachineConfigs() const {
+    std::vector<fs::path> BoxManSettings::GetAllMachinePaths() const {
         std::vector<fs::path> machines;
         for (const auto &path: fs::directory_iterator(MachineDirectory)) {
             fs::path cfg = fs::path(path.path());

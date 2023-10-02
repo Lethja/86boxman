@@ -13,13 +13,14 @@ find_package(Qt5 COMPONENTS
         Widgets
         REQUIRED)
 
-add_executable(86boxman main.cpp
-        boxman.cpp
-        boxman.h
-        MainWindow.ui
-        BoxManSettings.cpp
-        BoxManSettings.h
-        BoxManSettings.ui)
+add_executable(86boxman src/main.cpp
+        src/boxman.cpp
+        src/boxman.h
+        src/MainWindow.ui
+        src/BoxManSettings.cpp
+        src/BoxManSettings.h
+        src/BoxManSettings.ui)
+
 target_link_libraries(86boxman
         Qt5::Core
         Qt5::Gui

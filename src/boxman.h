@@ -21,7 +21,7 @@ namespace BoxManager {
     private:
         Ui::MainWindow *ui;
 
-        void PopulateList(BoxManager::Ui_MainWindow *window);
+        void PopulateList();
         BoxManSettings::BoxManSettings settings;
 
         void ConnectButtons(Ui_MainWindow *window) const;
