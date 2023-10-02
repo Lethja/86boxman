@@ -1,6 +1,7 @@
 #include "boxman.h"
 #include "ui_MainWindow.h"
 #include "BoxManSettingsUi.h"
+#include "CreateMachine.h"
 
 #include <QProcess>
 #include <QStandardPaths>
@@ -19,6 +20,11 @@ namespace BoxManager {
         delete ui;
     }
 
+    void MainWindow::ShowNewMachineDialog() {
+        auto newMachineUi = new CreateMachine(ui->centralwidget, this);
+        newMachineUi->exec();
+    }
+
     void MainWindow::ShowSettingsDialog() {
         auto settingsUi = new BoxManSettingsUi(ui->centralwidget, this);
         settingsUi->exec();
@@ -31,6 +37,7 @@ namespace BoxManager {
         connect(window->actionConfigure_Machine, &QAction::triggered, this, &MainWindow::ConfigureMachineAction);
         connect(window->MachineList, &QListView::doubleClicked, this, &MainWindow::StartMachine);
         connect(window->actionSettings, &QAction::triggered, this, &MainWindow::ShowSettingsDialog);
+        connect(window->actionNew_Machine, &QAction::triggered, this, &MainWindow::ShowNewMachineDialog);
     }
 
     void MainWindow::StartMachine() {
