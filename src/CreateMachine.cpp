@@ -2,6 +2,8 @@
 #include "CreateMachine.h"
 #include "ui_CreateMachine.h"
 
+#include <QMessageBox>
+
 
 CreateMachine::CreateMachine(QWidget *parent, BoxManager::MainWindow *mainWindow) : QDialog(parent),
                                                                                     ui(new Ui::CreateMachine) {
@@ -15,8 +17,13 @@ void CreateMachine::ConnectActions() {
 }
 
 void CreateMachine::Create() {
-    if (ui->newMachineName->text().isEmpty())
+    if (ui->newMachineName->text().isEmpty() || ui->newMachineName->text().contains(QRegExp("[\\/\\\\n\r\t]"))) {
+        QMessageBox messageBox(QMessageBox::Icon::Critical, QString("Invalid Machine Name"),
+                               QString("Machine name must be a valid folder name"), QMessageBox::StandardButton::Ok,
+                               mainWindow);
+        messageBox.exec();
         return;
+    }
 
     fs::path newPath = fs::path(mainWindow->settings.MachineDirectory).append(ui->newMachineName->text().toStdString());
 
