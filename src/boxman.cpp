@@ -74,6 +74,7 @@ namespace BoxManager {
             process->setWorkingDirectory(wd);
 
         process->start(program, args);
+        connect(process, SIGNAL(finished(int,QProcess::ExitStatus)), process, SLOT(deleteLater()));
     }
 
     QString MainWindow::GetSelectedMachine() {
