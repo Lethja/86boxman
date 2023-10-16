@@ -3,11 +3,10 @@
 #include "BoxManSettingsUi.h"
 #include "CreateMachine.h"
 
+#include <QDir>
 #include <QProcess>
 #include <QStandardPaths>
 #include <QStringListModel>
-
-namespace fs = std::filesystem;
 
 namespace BoxManager {
     MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWindow) {
@@ -42,9 +41,10 @@ namespace BoxManager {
 
     void MainWindow::StartMachine() {
         QString dir = GetSelectedMachine();
-        fs::path cfg = fs::path(dir.toStdString());
-        cfg.append("86box.cfg");
-        if (!(exists(cfg) && file_size(cfg) > 0)) {
+        QString cfg = QDir::cleanPath(dir + QDir::separator() + "86box.cfg");
+        QFile cfgFile(cfg);
+
+        if (!(QFile::exists(cfg) && cfgFile.size() > 0)) {
             ConfigureMachine(dir);
             return;
         }
@@ -65,12 +65,12 @@ namespace BoxManager {
     }
 
     void MainWindow::Run86Box(QStringList &args, const QString &wd) const {
-        auto program = QString(settings.Box86BinaryPath.c_str());
-        args << "-R" << QString(settings.RomDirectory.c_str());
+        auto program = QString(settings.Box86BinaryPath);
+        args << "-R" << QString(settings.RomDirectory);
 
         auto *process = new QProcess(nullptr);
 
-        if (is_directory(fs::path(wd.toStdString())))
+        if (QDir().exists(wd))
             process->setWorkingDirectory(wd);
 
         process->start(program, args);
@@ -80,16 +80,16 @@ namespace BoxManager {
     QString MainWindow::GetSelectedMachine() {
         int selectedRow = ui->MachineList->selectionModel()->currentIndex().row();
         QAbstractItemModel *model = ui->MachineList->model();
-        fs::path path = fs::path(settings.MachineDirectory);
-        path.append(model->index(selectedRow, 0).data().toString().toStdString());
-        return {path.c_str()};
+        QString path(settings.MachineDirectory + QDir::separator() +
+                     QString(model->index(selectedRow, 0).data().toString()));
+        return path;
     }
 
     void MainWindow::PopulateList() {
         QStringList list;
         auto *model = new QStringListModel(this);
-        for (const auto &machines: settings.GetAllMachinePaths()) {
-            auto str = QString(machines.filename().c_str());
+        for (const auto &machine: settings.GetAllMachinePaths()) {
+            auto str = QDir(machine).dirName();
             list.append(str);
         }
 

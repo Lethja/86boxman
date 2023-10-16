@@ -9,9 +9,9 @@ BoxManSettingsUi::BoxManSettingsUi(QWidget *parent, BoxManager::MainWindow *main
 }
 
 void BoxManSettingsUi::ConnectActions() {
-    ui->box86BinaryPath->setText(mainWindow->settings.Box86BinaryPath.c_str());
-    ui->machinePath->setText(mainWindow->settings.MachineDirectory.c_str());
-    ui->romPath->setText(mainWindow->settings.RomDirectory.c_str());
+    ui->box86BinaryPath->setText(mainWindow->settings.Box86BinaryPath);
+    ui->machinePath->setText(mainWindow->settings.MachineDirectory);
+    ui->romPath->setText(mainWindow->settings.RomDirectory);
 
     connect(ui->applyButton, &QPushButton::released, this, &BoxManSettingsUi::Apply);
 }
@@ -19,9 +19,9 @@ void BoxManSettingsUi::ConnectActions() {
 void BoxManSettingsUi::Apply() {
     BoxManSettings::BoxManSettings *setting;
     setting = &mainWindow->settings;
-    setting->Box86BinaryPath = ui->box86BinaryPath->text().toStdString();
-    setting->MachineDirectory = ui->machinePath->text().toStdString();
-    setting->RomDirectory = ui->romPath->text().toStdString();
+    setting->Box86BinaryPath = ui->box86BinaryPath->text();
+    setting->MachineDirectory = ui->machinePath->text();
+    setting->RomDirectory = ui->romPath->text();
 
     setting->WriteIni();
     mainWindow->PopulateList();

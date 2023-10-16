@@ -1,10 +1,7 @@
 #ifndef INC_86_BOX_MAN_SETTINGS_H
 #define INC_86_BOX_MAN_SETTINGS_H
 
-#include <filesystem>
-#include <QDialog>
-
-namespace fs = std::filesystem;
+#include <QString>
 
 namespace BoxManSettings {
     class BoxManSettings {
@@ -12,13 +9,13 @@ namespace BoxManSettings {
     public:
         BoxManSettings();
 
-        fs::path Box86BinaryPath;
-        fs::path MachineDirectory;
-        fs::path RomDirectory;
+        QString Box86BinaryPath;
+        QString MachineDirectory;
+        QString RomDirectory;
 
-        [[nodiscard]] std::vector<fs::path> GetAllMachinePaths() const;
+        QVector<QString> GetAllMachinePaths() const;
 
-        static fs::path GetIniPath();
+        static QString GetIniPath();
 
         void WriteIni() const;
     };

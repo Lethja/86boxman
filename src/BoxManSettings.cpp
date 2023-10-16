@@ -1,5 +1,7 @@
 #include "BoxManSettings.h"
 
+#include <QDir>
+#include <QDirIterator>
 #include <QStandardPaths>
 #include <QSettings>
 
@@ -8,57 +10,58 @@ namespace BoxManSettings {
     const char *INI_PATH_BIN = "path/binary", *INI_PATH_ROM = "path/roms", *INI_PATH_VMP = "path/vms";
 
     BoxManSettings::BoxManSettings() {
-        fs::path ApplicationDataPath = fs::path(
-                QStandardPaths::writableLocation(QStandardPaths::AppConfigLocation).toStdString());
+        QString ApplicationDataPath = QString(
+                QStandardPaths::writableLocation(QStandardPaths::AppConfigLocation) + QDir::separator());
 
-        fs::path BoxIni = GetIniPath();
-        fs::path MachinePath = fs::path(ApplicationDataPath).append("vms");
-        fs::path RomPath = fs::path(ApplicationDataPath).append("roms");
+        QString BoxIni = GetIniPath();
+        QString MachinePath = QString(ApplicationDataPath).append("vms");
+        QString RomPath = QString(ApplicationDataPath).append("roms");
 
         const char *DEFAULT_BIN = "86Box";
 
-        QSettings s(QString::fromStdString(BoxIni), QSettings::IniFormat);
+        QSettings s(BoxIni, QSettings::IniFormat);
 
-        if (!fs::exists(BoxIni)) {
+
+        if (!QFile::exists(BoxIni)) {
             s.setValue(INI_PATH_BIN, DEFAULT_BIN);
-            s.setValue(INI_PATH_ROM, RomPath.c_str());
-            s.setValue(INI_PATH_VMP, MachinePath.c_str());
+            s.setValue(INI_PATH_ROM, RomPath);
+            s.setValue(INI_PATH_VMP, MachinePath);
 
-            fs::create_directories(MachinePath);
-            fs::create_directories(RomPath);
+            QDir().mkpath(MachinePath);
+            QDir().mkpath(RomPath);
         }
 
-        Box86BinaryPath = fs::path(s.value(INI_PATH_BIN, DEFAULT_BIN).toString().toStdString());
-        RomDirectory = fs::path(s.value(INI_PATH_ROM, RomPath.c_str()).toString().toStdString());
-        MachineDirectory = fs::path(s.value(INI_PATH_VMP, MachinePath.c_str()).toString().toStdString());
+        Box86BinaryPath = QString(s.value(INI_PATH_BIN, DEFAULT_BIN).toString());
+        RomDirectory = QString(s.value(INI_PATH_ROM, RomPath).toString());
+        MachineDirectory = QString(s.value(INI_PATH_VMP, MachinePath).toString());
     }
 
-    fs::path BoxManSettings::GetIniPath() {
-        fs::path ApplicationDataPath = fs::path(
-                QStandardPaths::writableLocation(QStandardPaths::AppConfigLocation).toStdString());
-        fs::create_directories(ApplicationDataPath);
+    QString BoxManSettings::GetIniPath() {
+        QString ApplicationDataPath = QString(
+                QStandardPaths::writableLocation(QStandardPaths::AppConfigLocation) + QDir::separator());
+        QDir().mkpath(ApplicationDataPath);
 
-        fs::path BoxIni = fs::path(ApplicationDataPath).append("boxman.ini");
+        QString BoxIni = QString(ApplicationDataPath).append("boxman.ini");
         return BoxIni;
     }
 
     void BoxManSettings::WriteIni() const {
-        fs::path BoxIni = GetIniPath();
+        QString BoxIni = GetIniPath();
 
-        QSettings s(QString::fromStdString(BoxIni), QSettings::IniFormat);
-        s.setValue(INI_PATH_BIN, Box86BinaryPath.c_str());
-        s.setValue(INI_PATH_ROM, RomDirectory.c_str());
-        s.setValue(INI_PATH_VMP, MachineDirectory.c_str());
+        QSettings s(BoxIni, QSettings::IniFormat);
+        s.setValue(INI_PATH_BIN, Box86BinaryPath + QDir::separator());
+        s.setValue(INI_PATH_ROM, RomDirectory + QDir::separator());
+        s.setValue(INI_PATH_VMP, MachineDirectory + QDir::separator());
     }
 
-    std::vector<fs::path> BoxManSettings::GetAllMachinePaths() const {
-        std::vector<fs::path> machines;
-        if (is_directory(MachineDirectory)) {
-            for (const auto &path: fs::directory_iterator(MachineDirectory)) {
-                fs::path cfg = fs::path(path.path());
-                cfg.append("86box.cfg");
-                if (exists(cfg))
-                    machines.push_back(path.path());
+    QVector<QString> BoxManSettings::GetAllMachinePaths() const {
+        QVector<QString> machines;
+        if (QDir(MachineDirectory).exists()) {
+            QDirIterator it(MachineDirectory);
+            while (it.hasNext()) {
+                QString cfg = QDir::cleanPath(it.next() + QDir::separator() + "86box.cfg");
+                if (QFile::exists(cfg))
+                    machines.push_back(QFileInfo(cfg).dir().dirName());
             }
         }
         return machines;

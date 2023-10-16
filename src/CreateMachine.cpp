@@ -2,6 +2,7 @@
 #include "CreateMachine.h"
 #include "ui_CreateMachine.h"
 
+#include <QDir>
 #include <QMessageBox>
 
 
@@ -17,7 +18,7 @@ void CreateMachine::ConnectActions() {
 }
 
 void CreateMachine::Create() {
-    if (ui->newMachineName->text().isEmpty() || ui->newMachineName->text().contains(QRegExp("[\\/\\\\n\r\t]"))) {
+    if (ui->newMachineName->text().isEmpty() || ui->newMachineName->text().contains(QRegExp("[\\/\\\n\r\t]"))) {
         QMessageBox messageBox(QMessageBox::Icon::Critical, QString("Invalid Machine Name"),
                                QString("Machine name must be a valid folder name"), QMessageBox::StandardButton::Ok,
                                mainWindow);
@@ -25,15 +26,28 @@ void CreateMachine::Create() {
         return;
     }
 
-    fs::path newPath = fs::path(mainWindow->settings.MachineDirectory).append(ui->newMachineName->text().toStdString());
+    QString newPath(mainWindow->settings.MachineDirectory + QDir::separator() + ui->newMachineName->text());
+    if (!QDir().mkpath(newPath)) {
+        QMessageBox messageBox(QMessageBox::Icon::Critical, QString("Configuration write error"),
+                               QString("Unable to create machine folder '" + newPath + "'"),
+                               QMessageBox::StandardButton::Ok, mainWindow);
+        return;
+    }
+    QString cfgPath = newPath + QDir::separator() + QString("86box.cfg");
+    QFile cfgFile(cfgPath);
 
-    fs::create_directories(newPath);
-    fs::path cfgPath = fs::path(newPath).append("86box.cfg");
-    std::fstream st;
-    st.open(cfgPath, std::ios::out | std::ios::app);
+    if (!cfgFile.open(QIODevice::ReadWrite)) {
+        QMessageBox messageBox(QMessageBox::Icon::Critical, QString("Configuration write error"),
+                               QString("Unable to create machine configuration file '" + cfgPath + "'"),
+                               QMessageBox::StandardButton::Ok, mainWindow);
+        return;
+    }
+
+    cfgFile.flush();
+    cfgFile.close();
 
     if (ui->configureNowCheckBox->isChecked()) {
-        mainWindow->ConfigureMachine(QString(newPath.c_str()));
+        mainWindow->ConfigureMachine(QString(newPath));
     }
 
     mainWindow->PopulateList();
