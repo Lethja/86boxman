@@ -33,3 +33,6 @@ target_link_libraries(86boxman
         Qt5::Widgets
 )
 
+install(TARGETS 86boxman)
+install(FILES res/86boxman.desktop DESTINATION share/applications)
+
