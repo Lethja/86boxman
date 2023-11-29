@@ -4,6 +4,7 @@
 #include <QDirIterator>
 #include <QStandardPaths>
 #include <QSettings>
+#include <QFileDialog>
 
 namespace BoxManSettings {
 
@@ -49,9 +50,9 @@ namespace BoxManSettings {
         QString BoxIni = GetIniPath();
 
         QSettings s(BoxIni, QSettings::IniFormat);
-        s.setValue(INI_PATH_BIN, Box86BinaryPath + QDir::separator());
-        s.setValue(INI_PATH_ROM, RomDirectory + QDir::separator());
-        s.setValue(INI_PATH_VMP, MachineDirectory + QDir::separator());
+        s.setValue(INI_PATH_BIN, Box86BinaryPath);
+        s.setValue(INI_PATH_ROM, RomDirectory);
+        s.setValue(INI_PATH_VMP, MachineDirectory);
     }
 
     QVector<QString> BoxManSettings::GetAllMachinePaths() const {
@@ -65,5 +66,17 @@ namespace BoxManSettings {
             }
         }
         return machines;
+    }
+
+     QString BoxManSettings::FileDialog86BoxPath(QWidget *parent = nullptr) {
+        return QFileDialog::getOpenFileName(parent, "Select 86Box binary");
+    }
+
+     QString BoxManSettings::FileDialogRomPath(QWidget *parent = nullptr) {
+        return QFileDialog::getExistingDirectory(parent, "Select 86Box ROM directory");
+    }
+
+     QString BoxManSettings::FileDialogVmPath(QWidget *parent = nullptr) {
+        return QFileDialog::getExistingDirectory(parent, "Select VM directory");
     }
 } // BoxManSettings

@@ -24,6 +24,8 @@ namespace BoxManager {
 
         void ConfigureMachine(const QString &dir);
 
+        void ShowSettingsDialog();
+
     private:
         Ui::MainWindow *ui;
 
@@ -36,8 +38,6 @@ namespace BoxManager {
         void ConfigureMachineAction();
 
         void Run86Box(QStringList &args, const QString &wd) const;
-
-        void ShowSettingsDialog();
 
         void ShowNewMachineDialog();
     };

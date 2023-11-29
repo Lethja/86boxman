@@ -1,8 +1,6 @@
 #include "BoxManSettingsUi.h"
 #include "ui_BoxManSettingsUi.h"
 
-#include <QFileDialog>
-
 BoxManSettingsUi::BoxManSettingsUi(QWidget *parent, BoxManager::MainWindow *mainWindow) : QDialog(parent),
                                                                                           ui(new Ui::BoxManSettingsUi) {
     this->mainWindow = mainWindow;
@@ -22,17 +20,17 @@ void inline BoxManSettingsUi::ConnectActions() {
 }
 
 void BoxManSettingsUi::SetBinaryPath() {
-    QString binary = QFileDialog::getOpenFileName(this, "Select 86Box binary");
+    QString binary = BoxManSettings::BoxManSettings::FileDialog86BoxPath(this);
     ui->box86BinaryPath->setText(binary);
 }
 
-void BoxManSettingsUi::SetVmPath() {
-    QString directory = QFileDialog::getExistingDirectory(this, "Select VM directory");
+void BoxManSettingsUi::SetRomPath() {
+    QString directory = BoxManSettings::BoxManSettings::FileDialogRomPath(this);
     ui->box86BinaryPath->setText(directory);
 }
 
-void BoxManSettingsUi::SetRomPath() {
-    QString directory = QFileDialog::getExistingDirectory(this, "Select 86Box ROM directory");
+void BoxManSettingsUi::SetVmPath() {
+    QString directory = BoxManSettings::BoxManSettings::FileDialogVmPath(this);
     ui->box86BinaryPath->setText(directory);
 }
 
