@@ -1,9 +1,9 @@
 #ifndef INC_86_BOX_MAN_BOX_MAN_SETTINGS_UI_H
 #define INC_86_BOX_MAN_BOX_MAN_SETTINGS_UI_H
 
-#include <QDialog>
 #include "boxman.h"
 
+#include <QDialog>
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class BoxManSettingsUi; }
@@ -22,9 +22,15 @@ private:
     Ui::BoxManSettingsUi *ui;
     BoxManager::MainWindow *mainWindow;
 
-    void ConnectActions();
+    void inline ConnectActions();
 
     void Apply();
+
+    void SetBinaryPath();
+
+    void SetRomPath();
+
+    void SetVmPath();
 };
 
 
