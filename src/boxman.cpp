@@ -7,12 +7,18 @@
 #include <QProcess>
 #include <QStandardPaths>
 #include <QStringListModel>
+#include <QMessageBox>
 
 namespace BoxManager {
     MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWindow) {
         ui->setupUi(this);
-        PopulateList();
         ConnectActions(ui);
+        show();
+
+        if (!PathsAreOk())
+            ShowSettingsDialog();
+
+        PopulateList();
     }
 
     MainWindow::~MainWindow() {
@@ -95,5 +101,38 @@ namespace BoxManager {
 
         model->setStringList(list);
         ui->MachineList->setModel(model);
+    }
+
+    bool MainWindow::PathsAreOk() const {
+        size_t i = 0;
+        QString err;
+        if (!settings.PathBinOk())
+            err += "<li>86Box (" + settings.Box86BinaryPath + ") isn't a executable binary</li>", ++i;
+
+        if (!settings.PathVmOk())
+            err += "<li>Machine directory (" + settings.MachineDirectory + ") isn't a writable directory</li>", ++i;
+
+        if (!settings.PathRomOk())
+            err += "<li>ROM directory (" + settings.RomDirectory + ") doesn't contain ROM set files</li>", ++i;
+
+        if (err.length()) {
+            QString title = i == 1 ? "Invalid Path" : "Invalid Paths", paragraph =
+                    i == 1 ? "<p>Issue with configured path:</p>"
+                           : "<p>Multiple issues with configured paths:</p><ul>";
+
+            err = paragraph + "<ul>" + err +
+                  "</ul><p>To get started using 86Box visit <a href='https://86box.net/'>86box.net</a>. "
+                  "If you already have 86Box configured check all paths are set correctly.";
+
+            QMessageBox msgBox;
+            msgBox.setIcon(QMessageBox::Warning);
+            msgBox.setWindowTitle(title);
+            msgBox.setTextFormat(Qt::TextFormat::RichText);
+            msgBox.setText(err);
+            msgBox.setStandardButtons(QMessageBox::Ok);
+            msgBox.exec();
+            return false;
+        }
+        return true;
     }
 }

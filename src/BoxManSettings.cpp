@@ -68,15 +68,35 @@ namespace BoxManSettings {
         return machines;
     }
 
-     QString BoxManSettings::FileDialog86BoxPath(QWidget *parent = nullptr) {
+    bool BoxManSettings::PathBinOk() const {
+        QFileInfo fi(Box86BinaryPath);
+        return fi.isFile() && fi.isExecutable();
+    }
+
+    bool BoxManSettings::PathRomOk() const {
+        QFileInfo fi(RomDirectory);
+        if (fi.isDir()) {
+            fi = QFileInfo(RomDirectory + "/Machines");
+            if (fi.isDir())
+                return true;
+        }
+        return false;
+    }
+
+    bool BoxManSettings::PathVmOk() const {
+        QFileInfo fi(MachineDirectory);
+        return fi.isDir() && fi.isWritable();
+    }
+
+    QString BoxManSettings::FileDialogPathBin(QWidget *parent = nullptr) {
         return QFileDialog::getOpenFileName(parent, "Select 86Box binary");
     }
 
-     QString BoxManSettings::FileDialogRomPath(QWidget *parent = nullptr) {
+    QString BoxManSettings::FileDialogPathRom(QWidget *parent = nullptr) {
         return QFileDialog::getExistingDirectory(parent, "Select 86Box ROM directory");
     }
 
-     QString BoxManSettings::FileDialogVmPath(QWidget *parent = nullptr) {
+    QString BoxManSettings::FileDialogPathVm(QWidget *parent = nullptr) {
         return QFileDialog::getExistingDirectory(parent, "Select VM directory");
     }
 } // BoxManSettings

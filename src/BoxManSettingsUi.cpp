@@ -20,17 +20,17 @@ void inline BoxManSettingsUi::ConnectActions() {
 }
 
 void BoxManSettingsUi::SetBinaryPath() {
-    QString binary = BoxManSettings::BoxManSettings::FileDialog86BoxPath(this);
+    QString binary = BoxManSettings::BoxManSettings::FileDialogPathBin(this);
     ui->box86BinaryPath->setText(binary);
 }
 
 void BoxManSettingsUi::SetRomPath() {
-    QString directory = BoxManSettings::BoxManSettings::FileDialogRomPath(this);
+    QString directory = BoxManSettings::BoxManSettings::FileDialogPathRom(this);
     ui->box86BinaryPath->setText(directory);
 }
 
 void BoxManSettingsUi::SetVmPath() {
-    QString directory = BoxManSettings::BoxManSettings::FileDialogVmPath(this);
+    QString directory = BoxManSettings::BoxManSettings::FileDialogPathVm(this);
     ui->box86BinaryPath->setText(directory);
 }
 
@@ -41,10 +41,11 @@ void BoxManSettingsUi::Apply() {
     setting->MachineDirectory = ui->machinePath->text();
     setting->RomDirectory = ui->romPath->text();
 
-    setting->WriteIni();
-    mainWindow->PopulateList();
-
-    this->close();
+    if (mainWindow->PathsAreOk()) {
+        setting->WriteIni();
+        mainWindow->PopulateList();
+        this->close();
+    }
 }
 
 BoxManSettingsUi::~BoxManSettingsUi() {

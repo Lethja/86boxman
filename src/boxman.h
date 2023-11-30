@@ -26,6 +26,8 @@ namespace BoxManager {
 
         void ShowSettingsDialog();
 
+        bool PathsAreOk() const;
+
     private:
         Ui::MainWindow *ui;
 

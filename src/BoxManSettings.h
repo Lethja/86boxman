@@ -20,11 +20,17 @@ namespace BoxManSettings {
 
         void WriteIni() const;
 
-        static QString FileDialog86BoxPath(QWidget *parent);
+        static QString FileDialogPathBin(QWidget *parent);
 
-        static QString FileDialogRomPath(QWidget *parent);
+        static QString FileDialogPathRom(QWidget *parent);
 
-        static QString FileDialogVmPath(QWidget *parent);
+        static QString FileDialogPathVm(QWidget *parent);
+
+        bool PathBinOk() const;
+
+        bool PathRomOk() const;
+
+        bool PathVmOk() const;
     };
 } // BoxManSettings
 
