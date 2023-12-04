@@ -1,13 +1,13 @@
-cmake_minimum_required(VERSION 3.1)
+cmake_minimum_required(VERSION 3.1...3.4)
+
 set(PROJECT_NAME "86boxman")
-project(${PROJECT_NAME})
+project(${PROJECT_NAME} VERSION 0.01)
 
 set(CMAKE_CXX_STANDARD 98)
 set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
-
 
 find_package(Qt5 COMPONENTS
         Core
