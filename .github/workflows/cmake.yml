@@ -1,0 +1,161 @@
+name: CMake
+
+on:
+
+  push:
+    paths:
+      - src/**
+      - "CMakeLists.txt"
+      - "CMakePresets.json"
+      - .github/workflows/cmake.yml
+
+  pull_request:
+    paths:
+      - src/**
+      - "CMakeLists.txt"
+      - "CMakePresets.json"
+      - .github/workflows/**
+      - .github/workflows/cmake.yml
+
+jobs:
+
+  msys2:
+    name: "Windows MSYS2 (${{ matrix.ui.name }}, ${{ matrix.build.name }}, ${{ matrix.dynarec.name }}, ${{ matrix.environment.msystem }})"
+
+    runs-on: windows-2022
+
+    defaults:
+      run:
+        shell: msys2 {0}
+
+    strategy:
+      fail-fast: true
+      matrix:
+        build:
+          - name: Qt GUI
+            qt: on
+            static: on
+            slug: -Qt
+            packages: >-
+              qt5-static:p
+        environment:
+          - msystem: MINGW64
+            prefix: mingw-w64-x86_64
+
+    steps:
+      - name: Prepare MSYS2 environment
+        uses: msys2/setup-msys2@v2
+        with:
+          release: false
+          update: true
+          msystem: ${{ matrix.environment.msystem }}
+          pacboy: >-
+            ninja:p
+            cmake:p
+            gcc:p
+            pkgconf:p
+            ${{ matrix.ui.packages }}
+
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
+
+      - name: Configure CMake
+        run: >-
+          cmake .
+
+      - name: Build
+        run: |
+          cmake --build .
+
+      - name: Generate package
+        run: cmake --install build
+
+  linux:
+    name: "Linux GCC 11 (${{ matrix.ui.name }}, ${{ matrix.build.name }}, ${{ matrix.dynarec.name }}, x86_64)"
+
+    runs-on: ubuntu-22.04
+
+    strategy:
+      fail-fast: true
+      matrix:
+        build:
+          - name: Qt GUI
+            qt: on
+            slug: -Qt
+            packages: >-
+              qtbase5-dev
+              qtbase5-private-dev
+              qttools5-dev
+              libevdev-dev
+              libxkbcommon-x11-dev
+
+    steps:
+      - name: Install dependencies
+        run: >-
+          sudo apt update && sudo apt install
+          build-essential
+          ninja-build
+          ${{ matrix.ui.packages }}
+
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
+
+      - name: Configure CMake
+        run: >-
+          cmake .
+
+      - name: Build
+        run: |
+          cmake --build .
+
+      - name: Generate package
+        run: |
+          cmake --install build
+
+  macos11:
+    name: "macOS 11 (${{ matrix.ui.name }}, ${{ matrix.build.name }}, ${{ matrix.dynarec.name }}, x86_64)"
+
+    runs-on: macos-11
+
+    strategy:
+      fail-fast: true
+      matrix:
+        build:
+          - name: Qt
+            packages: >-
+              qt@5
+            src-packages: >-
+              libsndfile
+
+    steps:
+      - name: Install source dependencies
+        run: >-
+          brew reinstall -s
+          ${{ matrix.ui.src-packages }}
+
+      - name: Install dependencies
+        run: >-
+          brew install
+          ninja
+          ${{ matrix.ui.packages }}
+
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
+
+      - name: Configure CMake
+        run: >-
+          cmake .
+
+      - name: Build
+        run: |
+          cmake --build .
+
+      - name: Generate package
+        run: |
+          cmake --install build
