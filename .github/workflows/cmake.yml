@@ -52,3 +52,48 @@ jobs:
         with:
           name: '86boxman Ubuntu 22.04LTS x86_64'
           path: artifact
+
+  windows:
+    name: "MSYS2 Mingw-w64 x86_64"
+
+    runs-on: windows-2022
+
+    defaults:
+      run:
+        shell: msys2 {0}
+
+    steps:
+      - name: Prepare MSYS2 Environment
+        uses: msys2/setup-msys2@v2
+        with:
+          release: false
+          update: true
+          msystem: MINGW64
+          pacboy: >-
+            make:p
+            cmake:p
+            gcc:p
+            pkgconf:p
+            qt5-static:p
+
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Configure CMake
+        run: >-
+          cmake
+          -DCMAKE_FIND_LIBRARY_SUFFIXES=".a"
+          -DBUILD_SHARED_LIBS=OFF
+          .
+
+      - name: Build
+        run: |
+          cmake --build . && mkdir artifact && mv 86boxman artifact
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: '86boxman MSYS2 Mingw-w64 x86_64'
+          path: artifact
