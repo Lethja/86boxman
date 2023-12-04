@@ -1,5 +1,6 @@
 cmake_minimum_required(VERSION 3.1)
-project(86boxman)
+set(PROJECT_NAME "86boxman")
+project(${PROJECT_NAME})
 
 set(CMAKE_CXX_STANDARD 98)
 set(CMAKE_CXX_EXTENSIONS OFF)
@@ -14,7 +15,7 @@ find_package(Qt5 COMPONENTS
         Widgets
         REQUIRED)
 
-add_executable(86boxman src/main.cpp
+add_executable(${PROJECT_NAME} src/main.cpp
         src/boxman.cpp
         src/boxman.h
         src/MainWindow.ui
@@ -27,12 +28,21 @@ add_executable(86boxman src/main.cpp
         src/CreateMachine.h
         src/CreateMachine.ui)
 
-target_link_libraries(86boxman
+target_link_libraries(${PROJECT_NAME}
         Qt5::Core
         Qt5::Gui
         Qt5::Widgets
 )
 
-install(TARGETS 86boxman)
-install(FILES res/86boxman.desktop DESTINATION share/applications)
+if (WIN32)
+    target_link_options(${PROJECT_NAME} PRIVATE -mwindows)
+    add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD COMMAND ${CMAKE_STRIP} ${PROJECT_NAME}.exe)
+else ()
+    add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD COMMAND ${CMAKE_STRIP} ${PROJECT_NAME})
+endif ()
 
+install(TARGETS ${PROJECT_NAME})
+
+if (NOT WIN32)
+    install(FILES res/86boxman.desktop DESTINATION share/applications)
+endif ()
