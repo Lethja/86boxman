@@ -54,27 +54,22 @@ jobs:
           path: artifact
 
   windows:
-    name: "MSYS2 Mingw-w64 x86_64"
+    name: "Windows x86_64 (MXE)"
 
-    runs-on: windows-2022
+    runs-on: ubuntu-20.04
 
-    defaults:
-      run:
-        shell: msys2 {0}
+    env:
+      MXE_TARGET: x86-64-w64-mingw32.static
+      MXE_CMAKE: /usr/lib/mxe/usr/bin/x86_64-w64-mingw32.static-cmake
 
     steps:
-      - name: Prepare MSYS2 Environment
-        uses: msys2/setup-msys2@v2
-        with:
-          release: false
-          update: true
-          msystem: MINGW64
-          pacboy: >-
-            make:p
-            cmake:p
-            gcc:p
-            pkgconf:p
-            qt5-static:p
+      - name: Install MXE Packages
+        run: |
+          sudo apt-get -y install software-properties-common lsb-release cmake
+          sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 86B72ED9
+          sudo add-apt-repository -y "deb [arch=amd64] https://pkg.mxe.cc/repos/apt `lsb_release -sc` main"
+          sudo apt update
+          sudo apt-get -y install mxe-${MXE_TARGET}-cc mxe-${MXE_TARGET}-cmake-conf mxe-${MXE_TARGET}-qt5
 
       - name: Checkout Repository
         uses: actions/checkout@v4
@@ -83,17 +78,14 @@ jobs:
 
       - name: Configure CMake
         run: >-
-          cmake
-          -DCMAKE_FIND_LIBRARY_SUFFIXES=".a"
-          -DBUILD_SHARED_LIBS=OFF
-          .
+          ${MXE_CMAKE} .
 
       - name: Build
         run: |
-          cmake --build . && mkdir artifact && mv 86boxman artifact
+          ${MXE_CMAKE} --build . && mkdir artifact && mv 86boxman.exe artifact
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v3
         with:
-          name: '86boxman MSYS2 Mingw-w64 x86_64'
+          name: '86boxman Windows x86_64 (MXE)'
           path: artifact
