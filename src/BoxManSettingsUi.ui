@@ -21,17 +21,17 @@
        <item>
         <widget class="QLabel" name="label">
          <property name="text">
-          <string>86Box</string>
+          <string>86Box Path</string>
          </property>
         </widget>
        </item>
        <item>
         <layout class="QHBoxLayout" name="horizontalLayout">
          <item>
-          <widget class="QLineEdit" name="box86BinaryPath"/>
+          <widget class="QLineEdit" name="binPath"/>
          </item>
          <item>
-          <widget class="QPushButton" name="box86BinaryPushButton">
+          <widget class="QPushButton" name="binPathBrowse">
            <property name="text">
             <string>Browse...</string>
            </property>
@@ -48,17 +48,17 @@
      <item>
       <widget class="QLabel" name="label_2">
        <property name="text">
-        <string>Machine Directory</string>
+        <string>Machines Path</string>
        </property>
       </widget>
      </item>
      <item>
       <layout class="QHBoxLayout" name="horizontalLayout_2">
        <item>
-        <widget class="QLineEdit" name="machinePath"/>
+        <widget class="QLineEdit" name="vmPath"/>
        </item>
        <item>
-        <widget class="QPushButton" name="machinePushButton">
+        <widget class="QPushButton" name="vmPathBrowse">
          <property name="text">
           <string>Browse...</string>
          </property>
@@ -73,7 +73,7 @@
      <item>
       <widget class="QLabel" name="label_3">
        <property name="text">
-        <string>Rom Directory</string>
+        <string>Rom Path</string>
        </property>
       </widget>
      </item>
@@ -83,7 +83,7 @@
         <widget class="QLineEdit" name="romPath"/>
        </item>
        <item>
-        <widget class="QPushButton" name="romPushButton">
+        <widget class="QPushButton" name="romPathBrowse">
          <property name="text">
           <string>Browse...</string>
          </property>

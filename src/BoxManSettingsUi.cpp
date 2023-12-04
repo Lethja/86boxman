@@ -9,37 +9,40 @@ BoxManSettingsUi::BoxManSettingsUi(QWidget *parent, BoxManager::MainWindow *main
 }
 
 void inline BoxManSettingsUi::ConnectActions() {
-    ui->box86BinaryPath->setText(mainWindow->settings.Box86BinaryPath);
-    ui->machinePath->setText(mainWindow->settings.MachineDirectory);
-    ui->romPath->setText(mainWindow->settings.RomDirectory);
+    ui->binPath->setText(mainWindow->settings.binPath);
+    ui->vmPath->setText(mainWindow->settings.vmPath);
+    ui->romPath->setText(mainWindow->settings.romPath);
 
     connect(ui->applyButton, &QPushButton::released, this, &BoxManSettingsUi::Apply);
-    connect(ui->box86BinaryPushButton, &QPushButton::released, this, &BoxManSettingsUi::SetBinaryPath);
-    connect(ui->romPushButton, &QPushButton::released, this, &BoxManSettingsUi::SetRomPath);
-    connect(ui->machinePushButton, &QPushButton::released, this, &BoxManSettingsUi::SetVmPath);
+    connect(ui->binPathBrowse, &QPushButton::released, this, &BoxManSettingsUi::SetBinaryPath);
+    connect(ui->romPathBrowse, &QPushButton::released, this, &BoxManSettingsUi::SetRomPath);
+    connect(ui->vmPathBrowse, &QPushButton::released, this, &BoxManSettingsUi::SetVmPath);
 }
 
 void BoxManSettingsUi::SetBinaryPath() {
-    QString binary = BoxManSettings::BoxManSettings::FileDialogPathBin(this);
-    ui->box86BinaryPath->setText(binary);
+    QString path = BoxManSettings::BoxManSettings::FileDialogPathBin(this);
+    if (path.length())
+        ui->binPath->setText(path);
 }
 
 void BoxManSettingsUi::SetRomPath() {
-    QString directory = BoxManSettings::BoxManSettings::FileDialogPathRom(this);
-    ui->box86BinaryPath->setText(directory);
+    QString path = BoxManSettings::BoxManSettings::FileDialogPathRom(this);
+    if (path.length())
+        ui->romPath->setText(path);
 }
 
 void BoxManSettingsUi::SetVmPath() {
-    QString directory = BoxManSettings::BoxManSettings::FileDialogPathVm(this);
-    ui->box86BinaryPath->setText(directory);
+    QString path = BoxManSettings::BoxManSettings::FileDialogPathVm(this);
+    if (path.length())
+        ui->vmPath->setText(path);
 }
 
 void BoxManSettingsUi::Apply() {
     BoxManSettings::BoxManSettings *setting;
     setting = &mainWindow->settings;
-    setting->Box86BinaryPath = ui->box86BinaryPath->text();
-    setting->MachineDirectory = ui->machinePath->text();
-    setting->RomDirectory = ui->romPath->text();
+    setting->binPath = ui->binPath->text();
+    setting->vmPath = ui->vmPath->text();
+    setting->romPath = ui->romPath->text();
 
     if (mainWindow->PathsAreOk()) {
         setting->WriteIni();

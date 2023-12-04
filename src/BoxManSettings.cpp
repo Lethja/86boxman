@@ -8,20 +8,23 @@
 
 namespace BoxManSettings {
 
-    const char *INI_PATH_BIN = "path/binary", *INI_PATH_ROM = "path/roms", *INI_PATH_VMP = "path/vms";
+    const char *INI_PATH_BIN = "path/bin", *INI_PATH_ROM = "path/roms", *INI_PATH_VMP = "path/machines";
 
     BoxManSettings::BoxManSettings() {
         QString ApplicationDataPath = QString(
                 QStandardPaths::writableLocation(QStandardPaths::AppConfigLocation) + QDir::separator());
 
         QString BoxIni = GetIniPath();
-        QString MachinePath = QString(ApplicationDataPath).append("vms");
+        QString MachinePath = QString(ApplicationDataPath).append("machines");
         QString RomPath = QString(ApplicationDataPath).append("roms");
 
-        const char *DEFAULT_BIN = "86Box";
+        const char *DEFAULT_BIN = "86Box"
+#ifdef _WIN32
+        ".exe"
+#endif
+        ;
 
         QSettings s(BoxIni, QSettings::IniFormat);
-
 
         if (!QFile::exists(BoxIni)) {
             s.setValue(INI_PATH_BIN, DEFAULT_BIN);
@@ -32,9 +35,9 @@ namespace BoxManSettings {
             QDir().mkpath(RomPath);
         }
 
-        Box86BinaryPath = QString(s.value(INI_PATH_BIN, DEFAULT_BIN).toString());
-        RomDirectory = QString(s.value(INI_PATH_ROM, RomPath).toString());
-        MachineDirectory = QString(s.value(INI_PATH_VMP, MachinePath).toString());
+        binPath = QString(s.value(INI_PATH_BIN, DEFAULT_BIN).toString());
+        romPath = QString(s.value(INI_PATH_ROM, RomPath).toString());
+        vmPath = QString(s.value(INI_PATH_VMP, MachinePath).toString());
     }
 
     QString BoxManSettings::GetIniPath() {
@@ -50,15 +53,15 @@ namespace BoxManSettings {
         QString BoxIni = GetIniPath();
 
         QSettings s(BoxIni, QSettings::IniFormat);
-        s.setValue(INI_PATH_BIN, Box86BinaryPath);
-        s.setValue(INI_PATH_ROM, RomDirectory);
-        s.setValue(INI_PATH_VMP, MachineDirectory);
+        s.setValue(INI_PATH_BIN, binPath);
+        s.setValue(INI_PATH_ROM, romPath);
+        s.setValue(INI_PATH_VMP, vmPath);
     }
 
     QVector<QString> BoxManSettings::GetAllMachinePaths() const {
         QVector<QString> machines;
-        if (QDir(MachineDirectory).exists()) {
-            QDirIterator it(MachineDirectory);
+        if (QDir(vmPath).exists()) {
+            QDirIterator it(vmPath);
             while (it.hasNext()) {
                 QString cfg = QDir::cleanPath(it.next() + QDir::separator() + "86box.cfg");
                 if (QFile::exists(cfg))
@@ -69,14 +72,14 @@ namespace BoxManSettings {
     }
 
     bool BoxManSettings::PathBinOk() const {
-        QFileInfo fi(Box86BinaryPath);
+        QFileInfo fi(binPath);
         return fi.isFile() && fi.isExecutable();
     }
 
     bool BoxManSettings::PathRomOk() const {
-        QFileInfo fi(RomDirectory);
+        QFileInfo fi(romPath);
         if (fi.isDir()) {
-            fi = QFileInfo(RomDirectory + "/Machines");
+            fi = QFileInfo(romPath + "/machines");
             if (fi.isDir())
                 return true;
         }
@@ -84,19 +87,19 @@ namespace BoxManSettings {
     }
 
     bool BoxManSettings::PathVmOk() const {
-        QFileInfo fi(MachineDirectory);
+        QFileInfo fi(vmPath);
         return fi.isDir() && fi.isWritable();
     }
 
     QString BoxManSettings::FileDialogPathBin(QWidget *parent = nullptr) {
-        return QFileDialog::getOpenFileName(parent, "Select 86Box binary");
+        return QFileDialog::getOpenFileName(parent, "Select 86Box Path");
     }
 
     QString BoxManSettings::FileDialogPathRom(QWidget *parent = nullptr) {
-        return QFileDialog::getExistingDirectory(parent, "Select 86Box ROM directory");
+        return QFileDialog::getExistingDirectory(parent, "Select ROM Path");
     }
 
     QString BoxManSettings::FileDialogPathVm(QWidget *parent = nullptr) {
-        return QFileDialog::getExistingDirectory(parent, "Select VM directory");
+        return QFileDialog::getExistingDirectory(parent, "Select Machines Path");
     }
 } // BoxManSettings

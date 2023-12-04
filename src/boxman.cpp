@@ -71,8 +71,8 @@ namespace BoxManager {
     }
 
     void MainWindow::Run86Box(QStringList &args, const QString &wd) const {
-        auto program = QString(settings.Box86BinaryPath);
-        args << "-R" << QString(settings.RomDirectory);
+        auto program = QString(settings.binPath);
+        args << "-R" << QString(settings.romPath);
 
         auto *process = new QProcess(nullptr);
 
@@ -86,7 +86,7 @@ namespace BoxManager {
     QString MainWindow::GetSelectedMachine() {
         int selectedRow = ui->MachineList->selectionModel()->currentIndex().row();
         QAbstractItemModel *model = ui->MachineList->model();
-        QString path(settings.MachineDirectory + QDir::separator() +
+        QString path(settings.vmPath + QDir::separator() +
                      QString(model->index(selectedRow, 0).data().toString()));
         return path;
     }
@@ -107,13 +107,13 @@ namespace BoxManager {
         size_t i = 0;
         QString err;
         if (!settings.PathBinOk())
-            err += "<li>86Box (" + settings.Box86BinaryPath + ") isn't a executable binary</li>", ++i;
+            err += "<li>86Box (" + settings.binPath + ") isn't a executable binary</li>", ++i;
 
         if (!settings.PathVmOk())
-            err += "<li>Machine directory (" + settings.MachineDirectory + ") isn't a writable directory</li>", ++i;
+            err += "<li>Machine directory (" + settings.vmPath + ") isn't a writable directory</li>", ++i;
 
         if (!settings.PathRomOk())
-            err += "<li>ROM directory (" + settings.RomDirectory + ") doesn't contain ROM set files</li>", ++i;
+            err += "<li>ROM directory (" + settings.romPath + ") doesn't contain ROM set files</li>", ++i;
 
         if (err.length()) {
             QString title = i == 1 ? "Invalid Path" : "Invalid Paths", paragraph =

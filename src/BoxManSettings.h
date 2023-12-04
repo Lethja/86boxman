@@ -10,9 +10,9 @@ namespace BoxManSettings {
     public:
         BoxManSettings();
 
-        QString Box86BinaryPath;
-        QString MachineDirectory;
-        QString RomDirectory;
+        QString binPath;
+        QString vmPath;
+        QString romPath;
 
         QVector<QString> GetAllMachinePaths() const;
 

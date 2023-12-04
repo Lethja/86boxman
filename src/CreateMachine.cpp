@@ -26,7 +26,7 @@ void CreateMachine::Create() {
         return;
     }
 
-    QString newPath(mainWindow->settings.MachineDirectory + QDir::separator() + ui->newMachineName->text());
+    QString newPath(mainWindow->settings.vmPath + QDir::separator() + ui->newMachineName->text());
     if (!QDir().mkpath(newPath)) {
         QMessageBox messageBox(QMessageBox::Icon::Critical, QString("Configuration write error"),
                                QString("Unable to create machine folder '" + newPath + "'"),
