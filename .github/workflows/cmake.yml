@@ -1,0 +1,54 @@
+name: CMake
+
+on:
+
+  push:
+    paths:
+      - src/**
+      - "CMakeLists.txt"
+      - .github/workflows/cmake.yml
+
+  pull_request:
+    paths:
+      - src/**
+      - "CMakeLists.txt"
+      - .github/workflows/**
+      - .github/workflows/cmake.yml
+
+jobs:
+
+  linux:
+    name: "Ubuntu 22.04LTS x86_64"
+
+    runs-on: ubuntu-22.04
+
+    steps:
+      - name: Install Qt
+        uses: jurplel/install-qt-action@v3
+        with:
+          aqtversion: '==3.1.*'
+          version: '5.15.2'
+          host: 'linux'
+          target: 'desktop'
+          arch: 'gcc_64'
+
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Configure CMake
+        env:
+          CMAKE_PREFIX_PATH: ${{env.Qt5_Dir}}
+        run: >-
+          cmake .
+
+      - name: Build
+        run: |
+          cmake --build . && mkdir artifact && mv 86boxman artifact
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: '86boxman Ubuntu 22.04LTS x86_64'
+          path: artifact
