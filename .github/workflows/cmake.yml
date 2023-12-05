@@ -12,7 +12,6 @@ on:
     paths:
       - src/**
       - "CMakeLists.txt"
-      - .github/workflows/**
       - .github/workflows/cmake.yml
 
 jobs:
@@ -89,3 +88,40 @@ jobs:
         with:
           name: '86boxman Windows x86_64 (MXE)'
           path: artifact
+
+  macos:
+    name: "MacOS 11 x86_64"
+
+    runs-on: macos-11
+
+    steps:
+
+    - name: Install Qt
+      uses: jurplel/install-qt-action@v3
+      with:
+        aqtversion: '==3.1.*'
+        version: '5.15.2'
+        host: 'mac'
+        target: 'desktop'
+        arch: 'clang_64'
+
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Configure CMake
+      env:
+        CMAKE_PREFIX_PATH: ${{env.Qt5_Dir}}
+      run: >- 
+        cmake .
+
+    - name: Build
+      run: |
+        cmake --build . && mkdir artifact && mv 86boxman artifact
+
+    - name: Upload Artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: '86boxman MacOS 11 x86_64'
+        path: artifact
