@@ -4,7 +4,7 @@
 Type=Application
 
 # The version of the desktop entry specification to which this file complies
-Version=1.0
+Version=0.01
 
 # The name of the application
 Name=86BoxMan

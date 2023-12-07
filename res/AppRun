@@ -1,0 +1,10 @@
+#!/bin/bash
+
+RLINK=$(readlink -f "$0")
+DNAME=$(dirname "$RLINK")
+export APPDIR=$DNAME
+
+export PATH="$APPDIR/usr/bin:$PATH"
+export LD_LIBRARY_PATH="$APPDIR/usr/lib:$PATH"
+
+"$APPDIR"/bin/86boxman "$@"

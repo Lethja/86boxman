@@ -1,7 +1,6 @@
 name: CMake
 
 on:
-
   push:
     paths:
       - src/**
@@ -15,10 +14,8 @@ on:
       - .github/workflows/cmake.yml
 
 jobs:
-
   linux:
     name: "Ubuntu 22.04LTS x86_64"
-
     runs-on: ubuntu-22.04
 
     steps:
@@ -31,30 +28,42 @@ jobs:
           target: 'desktop'
           arch: 'gcc_64'
 
+      - name: Install AppImage
+        run: |
+          wget -q https://github.com/AppImage/AppImageKit/releases/download/continuous/appimagetool-x86_64.AppImage -O appimagetool
+          chmod a+x appimagetool
+
       - name: Checkout Repository
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - name: Configure CMake
+      - name: CMake Configure
         env:
           CMAKE_PREFIX_PATH: ${{env.Qt5_Dir}}
-        run: >-
-          cmake .
+        run: cmake .
 
-      - name: Build
+      - name: CMake Build
+        run: cmake --build . -j`nproc`
+
+      - name: Install
         run: |
-          cmake --build . && mkdir artifact && mv 86boxman artifact
+          mkdir AppDir
+          mv 86boxman AppDir
+
+      #- name: CMake Install
+      #  env:
+      #    DESTDIR: "AppDir"
+      #  run: cmake --install . --prefix /usr
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v3
         with:
           name: '86boxman Ubuntu 22.04LTS x86_64'
-          path: artifact
+          path: AppDir
 
   windows:
     name: "Windows x86_64 (MXE)"
-
     runs-on: ubuntu-20.04
 
     env:
@@ -75,53 +84,73 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Configure CMake
-        run: >-
-          ${MXE_CMAKE} .
+      - name: CMake Configure
+        run: ${MXE_CMAKE} .
 
-      - name: Build
+      - name: CMake Build
+        run: ${MXE_CMAKE} --build . -j`nproc`
+
+      - name: CMake Install
+        env:
+          DESTDIR: "ZipDir"
+        run: cmake --install . --prefix /
+
+      - name: Package
         run: |
-          ${MXE_CMAKE} --build . && mkdir artifact && mv 86boxman.exe artifact
+          mkdir Package
+          zip Package/86boxman.zip -kjr9 ZipDir/*
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v3
         with:
           name: '86boxman Windows x86_64 (MXE)'
-          path: artifact
+          path: Package
 
   macos:
     name: "MacOS 11 x86_64"
-
     runs-on: macos-11
 
     steps:
+      - name: Install Qt
+        uses: jurplel/install-qt-action@v3
+        with:
+          aqtversion: '==3.1.*'
+          version: '5.15.2'
+          host: 'mac'
+          target: 'desktop'
+          arch: 'clang_64'
 
-    - name: Install Qt
-      uses: jurplel/install-qt-action@v3
-      with:
-        aqtversion: '==3.1.*'
-        version: '5.15.2'
-        host: 'mac'
-        target: 'desktop'
-        arch: 'clang_64'
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
-    - name: Checkout Repository
-      uses: actions/checkout@v4
-      with:
-        fetch-depth: 0
+      - name: CMake Configure
+        env:
+          CMAKE_PREFIX_PATH: ${{env.Qt5_Dir}}
+        run: cmake .
 
-    - name: Configure CMake
-      env:
-        CMAKE_PREFIX_PATH: ${{env.Qt5_Dir}}
-      run: >- 
-        cmake .
+      - name: CMake Build
+        run: cmake --build . -j`sysctl -n hw.ncpu`
 
-    - name: Build
-      run: |
-        cmake --build . && mkdir artifact && mv 86boxman artifact
+      - name: Install
+        run: |
+          mkdir AppDir
+          mv 86boxman.app AppDir
 
-    - name: Upload Artifact
-      uses: actions/upload-artifact@v3
-      with:
-        name: '86boxman MacOS 11 x86_64'
-        path: artifact
+      - name: Package
+        uses: lethja/create-dmg-action@v0.0.2
+        with:
+          name: '86boxman'
+          srcdir: 'AppDir'
+
+      - name: Move DMG
+        run: |
+          mkdir Package
+          mv 86boxman.dmg Package
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: '86boxman MacOS 11 x86_64'
+          path: Package
