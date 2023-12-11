@@ -15,7 +15,7 @@ on:
 
 jobs:
   linux:
-    name: "Ubuntu 22.04LTS x86_64"
+    name: "Linux AppImage x86_64"
     runs-on: ubuntu-22.04
 
     steps:
@@ -27,11 +27,6 @@ jobs:
           host: 'linux'
           target: 'desktop'
           arch: 'gcc_64'
-
-      - name: Install AppImage
-        run: |
-          wget -q https://github.com/AppImage/AppImageKit/releases/download/continuous/appimagetool-x86_64.AppImage -O appimagetool
-          chmod a+x appimagetool
 
       - name: Checkout Repository
         uses: actions/checkout@v4
@@ -46,21 +41,22 @@ jobs:
       - name: CMake Build
         run: cmake --build . -j`nproc`
 
-      - name: Install
+      - name: Package
+        env:
+          LD_LIBRARY_PATH: ${{env.Qt5_Dir}}/lib:$LD_LIBRARY_PATH
         run: |
-          mkdir AppDir
-          mv 86boxman AppDir
-
-      #- name: CMake Install
-      #  env:
-      #    DESTDIR: "AppDir"
-      #  run: cmake --install . --prefix /usr
+          wget -q https://github.com/linuxdeploy/linuxdeploy/releases/download/continuous/linuxdeploy-x86_64.AppImage https://github.com/linuxdeploy/linuxdeploy-plugin-qt/releases/download/continuous/linuxdeploy-plugin-qt-x86_64.AppImage https://github.com/linuxdeploy/linuxdeploy-plugin-appimage/releases/download/continuous/linuxdeploy-plugin-appimage-x86_64.AppImage
+          sudo apt install libfuse2
+          chmod a+x linuxdeploy-x86_64.AppImage linuxdeploy-plugin-qt-x86_64.AppImage linuxdeploy-plugin-appimage-x86_64.AppImage
+          mkdir AppDir Package
+          ./linuxdeploy-x86_64.AppImage --appdir AppDir -e 86boxman -d res/86boxman.desktop -i res/86boxman.svg --plugin qt --output appimage
+          mv 86BoxMan-x86_64.AppImage Package
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v3
         with:
-          name: '86boxman Ubuntu 22.04LTS x86_64'
-          path: AppDir
+          name: '86boxman AppImage x86_64'
+          path: Package
 
   windows:
     name: "Windows x86_64 (MXE)"
@@ -107,7 +103,7 @@ jobs:
           path: Package
 
   macos:
-    name: "MacOS 11 x86_64"
+    name: "MacOS x86_64"
     runs-on: macos-11
 
     steps:
@@ -152,5 +148,5 @@ jobs:
       - name: Upload Artifact
         uses: actions/upload-artifact@v3
         with:
-          name: '86boxman MacOS 11 x86_64'
+          name: '86boxman MacOS x86_64'
           path: Package
