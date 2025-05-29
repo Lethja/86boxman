@@ -42,6 +42,8 @@ namespace BoxManager {
         void Run86Box(QStringList &args, const QString &wd) const;
 
         void ShowNewMachineDialog();
+
+        void OpenDirectory();
     };
 } // BoxManager
 

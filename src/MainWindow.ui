@@ -69,6 +69,8 @@
     </property>
     <addaction name="actionStart_Machine"/>
     <addaction name="actionConfigure_Machine"/>
+    <addaction name="separator"/>
+    <addaction name="actionOpen_Directory"/>
    </widget>
    <addaction name="menuManager"/>
    <addaction name="menuMachine"/>
@@ -101,6 +103,11 @@
   <action name="actionRefresh_Machine_List">
    <property name="text">
     <string>Refresh Machine List</string>
+   </property>
+  </action>
+  <action name="actionOpen_Directory">
+   <property name="text">
+    <string>Open Directory...</string>
    </property>
   </action>
  </widget>

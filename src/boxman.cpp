@@ -3,11 +3,13 @@
 #include "BoxManSettingsUi.h"
 #include "CreateMachine.h"
 
+#include <QDesktopServices>
 #include <QDir>
 #include <QProcess>
 #include <QStandardPaths>
 #include <QStringListModel>
 #include <QMessageBox>
+#include <QUrl>
 
 namespace BoxManager {
     MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWindow) {
@@ -43,6 +45,7 @@ namespace BoxManager {
         connect(window->MachineList, &QListView::doubleClicked, this, &MainWindow::StartMachine);
         connect(window->actionSettings, &QAction::triggered, this, &MainWindow::ShowSettingsDialog);
         connect(window->actionNew_Machine, &QAction::triggered, this, &MainWindow::ShowNewMachineDialog);
+        connect(window->actionOpen_Directory, &QAction::triggered, this, &MainWindow::OpenDirectory);
     }
 
     void MainWindow::StartMachine() {
@@ -68,6 +71,16 @@ namespace BoxManager {
 
     void MainWindow::ConfigureMachineAction() {
         ConfigureMachine(GetSelectedMachine());
+    }
+
+    void MainWindow::OpenDirectory() {
+        QString name = GetSelectedMachine();
+        if (!QDir().exists(name))
+            return;
+
+        QUrl url = QUrl::fromLocalFile(QDir().absoluteFilePath(name));
+        if (url.isValid())
+            QDesktopServices::openUrl(url);
     }
 
     void MainWindow::Run86Box(QStringList &args, const QString &wd) const {
