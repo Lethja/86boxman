@@ -138,6 +138,10 @@ namespace BoxManager {
         machine->path = wd;
 
         QString socket = wd + QDir::separator() + sockName;
+
+        if (QFile::exists(socket))
+            QFile::remove(socket);
+
         if (machine->server.listen(socket)) {
             QStringList env = machine->process.environment();
             env.append("86BOX_MANAGER_SOCKET=" + socket);
