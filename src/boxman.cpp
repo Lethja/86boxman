@@ -5,7 +5,6 @@
 
 #include <QDesktopServices>
 #include <QDir>
-#include <QLocalSocket>
 #include <QMessageBox>
 #include <QStandardPaths>
 #include <QStringListModel>
@@ -93,13 +92,7 @@ namespace BoxManager {
         RunningMachine *machine;
 
         if (IsSelectedMachineRunning(&machine)) {
-            //TODO: write 'showsettings' to the socket here.
-            QMessageBox msgBox;
-            msgBox.setText("This machine is already running.");
-            msgBox.setIcon(QMessageBox::Warning);
-            msgBox.setTextFormat(Qt::TextFormat::RichText);
-            msgBox.setStandardButtons(QMessageBox::Ok);
-            msgBox.exec();
+            machine->send(IPC_SHOW_SETTINGS);
             return;
         } else {
             QStringList args;
@@ -143,12 +136,14 @@ namespace BoxManager {
             QFile::remove(socket);
 
         if (machine->server.listen(socket)) {
-            QStringList env = machine->process.environment();
-            env.append("86BOX_MANAGER_SOCKET=" + socket);
+            QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
+            env.insert("86BOX_MANAGER_SOCKET", socket);
+            machine->process.setProcessEnvironment(env);
+            machine->setupSocketEvents();
         }
 
         machine->process.start(program, args);
-        //TODO: connect signals in a way that makes sense to the RunningMachine struct
+        //TODO: connect process signals in a way that makes sense to the RunningMachine struct
         //connect(&machine->process, SIGNAL(finished(int,QProcess::ExitStatus)), &machine->process, SLOT(deleteLater()));
 
         return machine;
