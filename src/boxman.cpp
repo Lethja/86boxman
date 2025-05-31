@@ -5,13 +5,16 @@
 
 #include <QDesktopServices>
 #include <QDir>
-#include <QProcess>
+#include <QLocalSocket>
+#include <QMessageBox>
 #include <QStandardPaths>
 #include <QStringListModel>
-#include <QMessageBox>
 #include <QUrl>
 
 namespace BoxManager {
+
+    const QString sockName = "ipc.sock";
+
     MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWindow) {
         ui->setupUi(this);
         ConnectActions(ui);
@@ -24,6 +27,9 @@ namespace BoxManager {
     }
 
     MainWindow::~MainWindow() {
+        for (auto machine : machines)
+            delete machine;
+
         delete ui;
     }
 
@@ -61,18 +67,47 @@ namespace BoxManager {
             return;
         }
 
-        QStringList args;
-        args << "-P" << dir;
-        Run86Box(args, dir);
+        RunningMachine *machine;
+
+        if (IsSelectedMachineRunning(&machine)) {
+            QMessageBox msgBox;
+            msgBox.setText("This machine is already running.");
+            msgBox.setIcon(QMessageBox::Warning);
+            msgBox.setTextFormat(Qt::TextFormat::RichText);
+            msgBox.setStandardButtons(QMessageBox::Ok);
+            msgBox.exec();
+            return;
+        } else {
+            QStringList args;
+
+            args << "-P" << dir, machine = Run86Box(args, dir);
+            if (machine)
+                machines.append(machine);
+        }
     }
 
     void MainWindow::ConfigureMachine(const QString &dir) {
         if (!PathsAreOk())
             return;
 
-        QStringList args;
-        args << "-S" << "-P" << dir;
-        Run86Box(args, dir);
+        RunningMachine *machine;
+
+        if (IsSelectedMachineRunning(&machine)) {
+            //TODO: write 'showsettings' to the socket here.
+            QMessageBox msgBox;
+            msgBox.setText("This machine is already running.");
+            msgBox.setIcon(QMessageBox::Warning);
+            msgBox.setTextFormat(Qt::TextFormat::RichText);
+            msgBox.setStandardButtons(QMessageBox::Ok);
+            msgBox.exec();
+            return;
+        } else {
+            QStringList args;
+
+            args << "-S" << "-P" << dir, machine = Run86Box(args, dir);
+            if (machine)
+                machines.append(machine);
+        }
     }
 
     void MainWindow::ConfigureMachineAction() {
@@ -89,20 +124,30 @@ namespace BoxManager {
             QDesktopServices::openUrl(url);
     }
 
-    void MainWindow::Run86Box(QStringList &args, const QString &wd) const {
+    RunningMachine *MainWindow::Run86Box(QStringList &args, const QString &wd) const {
         if (!PathsAreOk())
-            return;
+            return nullptr;
 
+        auto *machine = new RunningMachine;
         QString program = QString(settings.binPath);
         args << "-R" << QString(settings.romPath);
 
-        auto *process = new QProcess(nullptr);
-
         if (QDir().exists(wd))
-            process->setWorkingDirectory(wd);
+            machine->process.setWorkingDirectory(wd);
 
-        process->start(program, args);
-        connect(process, SIGNAL(finished(int,QProcess::ExitStatus)), process, SLOT(deleteLater()));
+        machine->path = wd;
+
+        QString socket = wd + QDir::separator() + sockName;
+        if (machine->server.listen(socket)) {
+            QStringList env = machine->process.environment();
+            env.append("86BOX_MANAGER_SOCKET=" + socket);
+        }
+
+        machine->process.start(program, args);
+        //TODO: connect signals in a way that makes sense to the RunningMachine struct
+        //connect(&machine->process, SIGNAL(finished(int,QProcess::ExitStatus)), &machine->process, SLOT(deleteLater()));
+
+        return machine;
     }
 
     QString MainWindow::GetSelectedMachine() {
@@ -159,5 +204,26 @@ namespace BoxManager {
         msgBox.exec();
 
         return false;
+    }
+
+    RunningMachine *MainWindow::FindRunningMachineByPath(const QString& path) {
+        for (RunningMachine *machine : machines)
+            if (machine->path.compare(path) == 0)
+                return machine;
+
+        return nullptr;
+    }
+
+    bool MainWindow::IsSelectedMachineRunning(RunningMachine **machine) {
+        QString path = GetSelectedMachine();
+        RunningMachine *m = FindRunningMachineByPath(path);
+
+        if (!m)
+            return false;
+
+        if (machine)
+            *machine = m;
+
+        return m->process.state() == QProcess::ProcessState::Running;
     }
 }

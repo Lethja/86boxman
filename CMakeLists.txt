@@ -20,6 +20,7 @@ set(CMAKE_AUTOUIC ON)
 find_package(Qt5 COMPONENTS
         Core
         Gui
+        Network
         Widgets
         REQUIRED)
 
@@ -40,6 +41,7 @@ add_executable(${PROJECT_NAME} MACOSX_BUNDLE
 target_link_libraries(${PROJECT_NAME}
         Qt5::Core
         Qt5::Gui
+        Qt5::Network
         Qt5::Widgets
 )
 
