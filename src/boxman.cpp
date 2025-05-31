@@ -49,6 +49,9 @@ namespace BoxManager {
     }
 
     void MainWindow::StartMachine() {
+        if (!PathsAreOk())
+            return;
+
         QString dir = GetSelectedMachine();
         QString cfg = QDir::cleanPath(dir + QDir::separator() + "86box.cfg");
         QFile cfgFile(cfg);
@@ -64,6 +67,9 @@ namespace BoxManager {
     }
 
     void MainWindow::ConfigureMachine(const QString &dir) {
+        if (!PathsAreOk())
+            return;
+
         QStringList args;
         args << "-S" << "-P" << dir;
         Run86Box(args, dir);
