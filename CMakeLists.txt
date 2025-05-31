@@ -11,7 +11,8 @@ set(CMAKE_OSX_DEPLOYMENT_TARGET "10.13")
 
 project(${PROJECT_NAME} VERSION 0.01)
 
-set(CMAKE_CXX_STANDARD 98)
+set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
@@ -22,7 +23,8 @@ find_package(Qt5 COMPONENTS
         Gui
         Network
         Widgets
-        REQUIRED)
+        REQUIRED
+)
 
 add_executable(${PROJECT_NAME} MACOSX_BUNDLE
         src/main.cpp
@@ -36,7 +38,8 @@ add_executable(${PROJECT_NAME} MACOSX_BUNDLE
         src/BoxManSettingsUi.ui
         src/CreateMachine.cpp
         src/CreateMachine.h
-        src/CreateMachine.ui)
+        src/CreateMachine.ui
+)
 
 target_link_libraries(${PROJECT_NAME}
         Qt5::Core
