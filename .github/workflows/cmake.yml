@@ -104,7 +104,7 @@ jobs:
 
   macos:
     name: "MacOS x86_64"
-    runs-on: macos-11
+    runs-on: macos-13
 
     steps:
       - name: Install Qt
