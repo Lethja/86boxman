@@ -18,6 +18,7 @@ namespace BoxManager {
     QT_END_NAMESPACE
 
     typedef struct RunningMachine : public QObject {
+    public:
         QString path;
         QProcess process;
         QLocalServer server;
@@ -25,6 +26,10 @@ namespace BoxManager {
 
         void setupSocketEvents() {
             connect(&server, &QLocalServer::newConnection, this, &RunningMachine::newSocket);
+        }
+
+        void setupProcessEvents() {
+            connect(&process, QOverload<int, QProcess::ExitStatus>::of(&QProcess::finished), this, &RunningMachine::stopped);
         }
 
         void newSocket() {
@@ -45,12 +50,22 @@ namespace BoxManager {
             }
         }
 
+    signals:
+        void pointerInvalid(BoxManager::RunningMachine *machine);
+
+    public:
         ~RunningMachine() override {
+            emit pointerInvalid((RunningMachine *) this);
             if (process.state() != QProcess::ProcessState::NotRunning) {
                 //TODO: send "shutdown" signal and wait a while for the virtual machine to shutdown
                 process.terminate(), process.close(), process.waitForFinished();
             }
             server.close();
+        }
+
+        Q_OBJECT
+        void stopped(int exitCode, QProcess::ExitStatus exitStatus) {
+            delete this;
         }
     } RunningMachine;
 
@@ -94,6 +109,8 @@ namespace BoxManager {
         void OpenDirectory();
 
         RunningMachine *FindRunningMachineByPath(const QString& path);
+
+        void removeMachine(RunningMachine *machine);
     };
 } // BoxManager
 

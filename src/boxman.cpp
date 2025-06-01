@@ -143,10 +143,15 @@ namespace BoxManager {
         }
 
         machine->process.start(program, args);
-        //TODO: connect process signals in a way that makes sense to the RunningMachine struct
-        //connect(&machine->process, SIGNAL(finished(int,QProcess::ExitStatus)), &machine->process, SLOT(deleteLater()));
+        machine->setupProcessEvents();
+
+        connect(machine, &RunningMachine::pointerInvalid, this, &MainWindow::removeMachine);
 
         return machine;
+    }
+
+    void MainWindow::removeMachine(RunningMachine *machine) {
+        machines.removeOne(machine);
     }
 
     QString MainWindow::GetSelectedMachine() {
