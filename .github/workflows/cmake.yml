@@ -53,14 +53,14 @@ jobs:
           mv 86BoxMan-x86_64.AppImage Package
 
       - name: Upload Artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: '86boxman AppImage x86_64'
           path: Package
 
   windows:
     name: "Windows x86_64 (MXE)"
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
 
     env:
       MXE_TARGET: x86-64-w64-mingw32.static
@@ -97,7 +97,7 @@ jobs:
           zip Package/86boxman.zip -kjr9 ZipDir/*
 
       - name: Upload Artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: '86boxman Windows x86_64 (MXE)'
           path: Package
@@ -146,7 +146,7 @@ jobs:
           mv 86boxman.dmg Package
 
       - name: Upload Artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: '86boxman MacOS x86_64'
           path: Package
