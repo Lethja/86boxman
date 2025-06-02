@@ -70,6 +70,12 @@
     <addaction name="actionStart_Machine"/>
     <addaction name="actionConfigure_Machine"/>
     <addaction name="separator"/>
+    <addaction name="actionCtrl_Alt_Delete"/>
+    <addaction name="actionHard_Reset"/>
+    <addaction name="separator"/>
+    <addaction name="actionPress_Power_Button"/>
+    <addaction name="actionHard_Power_Off"/>
+    <addaction name="separator"/>
     <addaction name="actionOpen_Directory"/>
    </widget>
    <addaction name="menuManager"/>
@@ -108,6 +114,26 @@
   <action name="actionOpen_Directory">
    <property name="text">
     <string>Open Directory...</string>
+   </property>
+  </action>
+  <action name="actionCtrl_Alt_Delete">
+   <property name="text">
+    <string>Ctrl Alt Delete</string>
+   </property>
+  </action>
+  <action name="actionHard_Reset">
+   <property name="text">
+    <string>Hard Reset</string>
+   </property>
+  </action>
+  <action name="actionPress_Power_Button">
+   <property name="text">
+    <string>Press Power Button</string>
+   </property>
+  </action>
+  <action name="actionHard_Power_Off">
+   <property name="text">
+    <string>Hard Power Off</string>
    </property>
   </action>
  </widget>
