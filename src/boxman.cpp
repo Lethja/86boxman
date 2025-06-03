@@ -51,6 +51,13 @@ namespace BoxManager {
         connect(window->actionSettings, &QAction::triggered, this, &MainWindow::ShowSettingsDialog);
         connect(window->actionNew_Machine, &QAction::triggered, this, &MainWindow::ShowNewMachineDialog);
         connect(window->actionOpen_Directory, &QAction::triggered, this, &MainWindow::OpenDirectory);
+
+        connect(window->actionCtrl_Alt_Delete, &QAction::triggered, this, &MainWindow::SendCtrlAltDel);
+        connect(window->actionHard_Reset, &QAction::triggered, this, &MainWindow::SendHardReset);
+        connect(window->actionPress_Power_Button, &QAction::triggered, this, &MainWindow::SendPowerButton);
+        connect(window->actionHard_Reset, &QAction::triggered, this, &MainWindow::SendHardReset);
+        connect(window->actionPress_Power_Button, &QAction::triggered, this, &MainWindow::SendPowerButton);
+        connect(window->actionHard_Power_Off, &QAction::triggered, this, &MainWindow::SendHardOff);
     }
 
     void MainWindow::StartMachine() {

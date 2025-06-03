@@ -111,6 +111,30 @@ namespace BoxManager {
         RunningMachine *FindRunningMachineByPath(const QString& path);
 
         void removeMachine(RunningMachine *machine);
+
+        void SendCtrlAltDel() {
+            RunningMachine *machine;
+            if (IsSelectedMachineRunning(&machine))
+                machine->send("cad\n");
+        }
+
+        void SendHardReset() {
+            RunningMachine *machine;
+            if (IsSelectedMachineRunning(&machine))
+                machine->send("reset\n");
+        }
+
+        void SendPowerButton() {
+            RunningMachine *machine;
+            if (IsSelectedMachineRunning(&machine))
+                machine->send("shutdown\n");
+        }
+
+        void SendHardOff() {
+            RunningMachine *machine;
+            if (IsSelectedMachineRunning(&machine))
+                machine->send("shutdownnoprompt\n");
+        }
     };
 } // BoxManager
 
