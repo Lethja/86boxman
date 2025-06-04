@@ -10,7 +10,12 @@
 
 #include "BoxManSettings.h"
 
-#define IPC_SHOW_SETTINGS "showsettings\n"
+#define IPC_SEND_CTRL_ALT_DEL "coa\n"
+#define IPC_SEND_PAUSE "pause\n"
+#define IPC_SEND_RESET "reset\n"
+#define IPC_SEND_SHOW_SETTINGS "showsettings\n"
+#define IPC_SEND_SHUTDOWN "shutdown\n"
+#define IPC_SEND_SHUTDOWN_NO_PROMPT "shutdownnoprompt\n"
 
 namespace BoxManager {
     QT_BEGIN_NAMESPACE
@@ -115,25 +120,25 @@ namespace BoxManager {
         void SendCtrlAltDel() {
             RunningMachine *machine;
             if (IsSelectedMachineRunning(&machine))
-                machine->send("cad\n");
+                machine->send(IPC_SEND_CTRL_ALT_DEL);
         }
 
         void SendHardReset() {
             RunningMachine *machine;
             if (IsSelectedMachineRunning(&machine))
-                machine->send("reset\n");
+                machine->send(IPC_SEND_RESET);
         }
 
         void SendPowerButton() {
             RunningMachine *machine;
             if (IsSelectedMachineRunning(&machine))
-                machine->send("shutdown\n");
+                machine->send(IPC_SEND_SHUTDOWN);
         }
 
         void SendHardOff() {
             RunningMachine *machine;
             if (IsSelectedMachineRunning(&machine))
-                machine->send("shutdownnoprompt\n");
+                machine->send(IPC_SEND_SHUTDOWN_NO_PROMPT);
         }
     };
 } // BoxManager

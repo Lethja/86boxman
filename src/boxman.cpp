@@ -99,7 +99,7 @@ namespace BoxManager {
         RunningMachine *machine;
 
         if (IsSelectedMachineRunning(&machine)) {
-            machine->send(IPC_SHOW_SETTINGS);
+            machine->send(IPC_SEND_SHOW_SETTINGS);
             return;
         } else {
             QStringList args;
