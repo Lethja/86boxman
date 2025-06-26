@@ -158,6 +158,7 @@ namespace BoxManager {
     }
 
     void MainWindow::removeMachine(RunningMachine *machine) {
+        disconnect(machine, &RunningMachine::pointerInvalid, this, &MainWindow::removeMachine);
         machines.removeOne(machine);
     }
 
