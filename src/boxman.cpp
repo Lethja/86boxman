@@ -43,21 +43,21 @@ namespace BoxManager {
     }
 
     void MainWindow::ConnectActions(Ui_MainWindow *window) const {
-        connect(window->actionExit, &QAction::triggered, this, &QApplication::quit);
-        connect(window->actionRefresh_Machine_List, &QAction::triggered, this, &MainWindow::PopulateList);
-        connect(window->actionStart_Machine, &QAction::triggered, this, &MainWindow::StartMachine);
-        connect(window->actionConfigure_Machine, &QAction::triggered, this, &MainWindow::ConfigureMachineAction);
-        connect(window->MachineList, &QListView::doubleClicked, this, &MainWindow::StartMachine);
-        connect(window->actionSettings, &QAction::triggered, this, &MainWindow::ShowSettingsDialog);
-        connect(window->actionNew_Machine, &QAction::triggered, this, &MainWindow::ShowNewMachineDialog);
-        connect(window->actionOpen_Directory, &QAction::triggered, this, &MainWindow::OpenDirectory);
+        connect(window->actionExit, &QAction::triggered, this, &QApplication::quit); // clazy:exclude=connect-non-signal
+        connect(window->actionRefresh_Machine_List, &QAction::triggered, this, &MainWindow::PopulateList); // clazy:exclude=connect-non-signal
+        connect(window->actionStart_Machine, &QAction::triggered, this, &MainWindow::StartMachine); // clazy:exclude=connect-non-signal
+        connect(window->actionConfigure_Machine, &QAction::triggered, this, &MainWindow::ConfigureMachineAction); // clazy:exclude=connect-non-signal
+        connect(window->MachineList, &QListView::doubleClicked, this, &MainWindow::StartMachine); // clazy:exclude=connect-non-signal
+        connect(window->actionSettings, &QAction::triggered, this, &MainWindow::ShowSettingsDialog); // clazy:exclude=connect-non-signal
+        connect(window->actionNew_Machine, &QAction::triggered, this, &MainWindow::ShowNewMachineDialog); // clazy:exclude=connect-non-signal
+        connect(window->actionOpen_Directory, &QAction::triggered, this, &MainWindow::OpenDirectory); // clazy:exclude=connect-non-signal
 
-        connect(window->actionCtrl_Alt_Delete, &QAction::triggered, this, &MainWindow::SendCtrlAltDel);
-        connect(window->actionHard_Reset, &QAction::triggered, this, &MainWindow::SendHardReset);
-        connect(window->actionPress_Power_Button, &QAction::triggered, this, &MainWindow::SendPowerButton);
-        connect(window->actionHard_Reset, &QAction::triggered, this, &MainWindow::SendHardReset);
-        connect(window->actionPress_Power_Button, &QAction::triggered, this, &MainWindow::SendPowerButton);
-        connect(window->actionHard_Power_Off, &QAction::triggered, this, &MainWindow::SendHardOff);
+        connect(window->actionCtrl_Alt_Delete, &QAction::triggered, this, &MainWindow::SendCtrlAltDel); // clazy:exclude=connect-non-signal
+        connect(window->actionHard_Reset, &QAction::triggered, this, &MainWindow::SendHardReset); // clazy:exclude=connect-non-signal
+        connect(window->actionPress_Power_Button, &QAction::triggered, this, &MainWindow::SendPowerButton); // clazy:exclude=connect-non-signal
+        connect(window->actionHard_Reset, &QAction::triggered, this, &MainWindow::SendHardReset); // clazy:exclude=connect-non-signal
+        connect(window->actionPress_Power_Button, &QAction::triggered, this, &MainWindow::SendPowerButton); // clazy:exclude=connect-non-signal
+        connect(window->actionHard_Power_Off, &QAction::triggered, this, &MainWindow::SendHardOff); // clazy:exclude=connect-non-signal
     }
 
     void MainWindow::StartMachine() {
@@ -152,7 +152,7 @@ namespace BoxManager {
         machine->process.start(program, args);
         machine->setupProcessEvents();
 
-        connect(machine, &RunningMachine::pointerInvalid, this, &MainWindow::removeMachine);
+        connect(machine, &RunningMachine::pointerInvalid, this, &MainWindow::removeMachine); // clazy:exclude=connect-non-signal
 
         return machine;
     }
