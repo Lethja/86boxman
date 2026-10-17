@@ -18,13 +18,29 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
 
-find_package(Qt5 COMPONENTS
+find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS
         Core
         Gui
         Network
         Widgets
-        REQUIRED
 )
+
+if (QT_VERSION_MAJOR GREATER_EQUAL 6)
+    find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS
+            Core
+            Core5Compat
+            Gui
+            Network
+            Widgets
+    )
+else ()
+    find_package(Qt5 REQUIRED COMPONENTS
+            Core
+            Gui
+            Network
+            Widgets
+    )
+endif ()
 
 add_executable(${PROJECT_NAME} MACOSX_BUNDLE
         src/main.cpp
@@ -42,11 +58,15 @@ add_executable(${PROJECT_NAME} MACOSX_BUNDLE
 )
 
 target_link_libraries(${PROJECT_NAME}
-        Qt5::Core
-        Qt5::Gui
-        Qt5::Network
-        Qt5::Widgets
+        Qt${QT_VERSION_MAJOR}::Core
+        Qt${QT_VERSION_MAJOR}::Gui
+        Qt${QT_VERSION_MAJOR}::Network
+        Qt${QT_VERSION_MAJOR}::Widgets
 )
+
+if (QT_VERSION_MAJOR GREATER_EQUAL 6)
+    target_link_libraries(${PROJECT_NAME} Qt${QT_VERSION_MAJOR}::Core5Compat)
+endif ()
 
 if (APPLE)
     find_program(MACDEPLOYQT_EXECUTABLE macdeployqt HINTS "${_qt_bin_dir}")

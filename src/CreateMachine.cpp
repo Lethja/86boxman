@@ -18,7 +18,13 @@ void CreateMachine::ConnectActions() {
 }
 
 void CreateMachine::Create() {
-    if (ui->newMachineName->text().isEmpty() || ui->newMachineName->text().contains(QRegExp("[\\/\\\n\r\t]"))) {
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    const QRegularExpression invalidMachineNameChars("[/\\\\\n\r\t]");
+#else
+    const QRegExp invalidMachineNameChars("[\\/\\\n\r\t]");
+#endif
+
+    if (ui->newMachineName->text().isEmpty() || ui->newMachineName->text().contains(invalidMachineNameChars)) {
         QMessageBox messageBox(QMessageBox::Icon::Critical, QString("Invalid Machine Name"),
                                QString("Machine name must be a valid folder name"), QMessageBox::StandardButton::Ok,
                                mainWindow);
